@@ -1,10 +1,12 @@
 # Documentation for Financial Modeling Scripts
 
 This document combines the documentation for three key financial modeling scripts:
+<!-- create links to different section -->
 
-1. **Black-Scholes Option Pricing and Greeks Analysis**
-2. **Portfolio Simulation and Visualization with Efficient Frontier**
-3. **Jump-Diffusion Model Simulation Script**
+## Table of Contents
+- [Black-Scholes Option Pricing and Greeks Analysis](#1-black-scholes-option-pricing-and-greeks-analysis)
+- [Portfolio Simulation and Visualization with Efficient Frontier](#2-portfolio-simulation-and-visualization-with-efficient-frontier)
+- [Jump-Diffusion Model Simulation Script](#3-jump-diffusion-model-simulation-script)
 
 ---
 
