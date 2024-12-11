@@ -205,3 +205,11 @@ plot_jump_diffusion_simulation(simulations, paths, times, N=20)
 ```
 
 ---
+<!-- show some results -->
+# Results
+-Black Scholes Option Pricing
+![Option Pricing](greeks.png)
+-Portfolio Simulation and Visualization
+![Portfolio Simulation](MPT.jpg)
+-Jump-Diffusion Model Simulation
+![Jump-Diffusion Simulation](Jump_Diffusion.jpg)
