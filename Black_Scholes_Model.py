@@ -35,107 +35,81 @@ def calculate_greeks(S, K, T, r, sigma):
 
 def plotting():
     fig = make_subplots(
-    rows=2, cols=1, 
-    shared_xaxes=True, 
+    rows=2, cols=3,
     )
 
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=call_prices, 
-        mode='lines', 
-        name = 'Call Option Price',
-        # line=dict(color='blue', width=1),
+    option_prices = [call_prices, put_prices]
+    option_names = ['Call Option Price', 'Put Option Price']
+    fill_patterns = ['\\', '/']
+
+    for prices, name, pattern in zip(option_prices, option_names, fill_patterns):
+        fig.add_trace(go.Scatter(
+            x=stock_prices, 
+            y=prices, 
+            mode='lines', 
+            name=name,
+            fill='tozeroy',
+            fillpattern={
+                'shape': pattern,  # options are ['', '/', '\\', 'x', '-', '|', '+', '.']
+                'size': 5,
+            }
         ), row=1, col=1)
 
+    greeks = [delta, gamma, theta, vega, rho]
+    greek_names = ['Delta', 'Gamma', 'Theta', 'Vega', 'Rho']
+    positions = [(1, 2), (1, 3), (2, 1), (2, 2), (2, 3)]
 
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=put_prices, 
-        mode='lines', 
-        name = 'Put Option Price',
-        # line=dict(color='red', width=1),
-        ), row=1, col=1)
+    for greek, name, pos in zip(greeks, greek_names, positions):
+        fig.add_trace(go.Scatter(
+            x=stock_prices, 
+            y=greek, 
+            mode='lines', 
+            name=name,
+            fill='tozeroy',
+            fillpattern={
+                'shape': '.',       # options are ['', '/', '\\', 'x', '-', '|', '+', '.']
+                'size': 5,
+            }
+        ), row=pos[0], col=pos[1])
 
-    fig.add_vline(
-        x=K, 
-        line_width=1, 
-        line_dash="dash", 
-        line_color="black", 
-        annotation_text="Strike Price", 
-        annotation_position="top right",
-        row=1, col=1)
-
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=delta, 
-        mode='lines', 
-        name = 'Delta',
-        # secondary y axis
-        # line=dict(color='green', width=1),
-        ), row=2, col=1)
-
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=gamma, 
-        mode='lines', 
-        name = 'Gamma',
-        # secondary y axis
-        # yaxis="y2",
-        # line=dict(color='orange', width=1),
-        ), row=2, col=1)
-
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=theta, 
-        mode='lines', 
-        name = 'Theta',
-        # secondary y axis
-        # yaxis="y2",
-        # line=dict(color='purple', width=1),
-        ), row=2, col=1)
-
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=vega, 
-        mode='lines', 
-        name = 'Vega',
-        # secondary y axis
-        # yaxis="y2",
-        # line=dict(color='brown', width=1),
-        ), row=2, col=1)
-
-    fig.add_trace(go.Scatter(
-        x=stock_prices, 
-        y=rho, 
-        mode='lines', 
-        name = 'Rho',
-        # secondary y axis
-        # yaxis="y2",
-        # line=dict(color='pink', width=1),
-        ), row=2, col=1)
-
-    fig.add_vline(
-        x=K, 
-        line_width=1, 
-        line_dash="dash", 
-        line_color="black", 
-        annotation_text="Strike Price", 
-        annotation_position="top right",
-        row=2, col=1)
+    # Add vertical line for strike price
+    for i in range(1, 3):
+        for j in range(1, 4):
+            fig.add_vline(
+                x=K, 
+                line_width=1, 
+                line_dash="dash", 
+                line_color="black", 
+                annotation_text="Strike Price", 
+                annotation_position="top left",
+                row=i, col=j)
 
     fig.update_layout(
         title='Black-Scholes Option Price',
+        xaxis_title='Stock Price',
         xaxis2_title='Stock Price',
+        xaxis3_title='Stock Price',
+        xaxis4_title='Stock Price',
+        xaxis5_title='Stock Price',
+        xaxis6_title='Stock Price',
+
         yaxis_title='Option Price',
-        yaxis2_title='Greeks',
+        yaxis2_title='Delta',
+        yaxis3_title='Gamma',
+        yaxis4_title='Theta',
+        yaxis5_title='Vega',
+        yaxis6_title='Rho',
+
+        height=800,
+        width=1200,
         # legend position
-        # legend=dict(x=0, y=1.15),
+        legend_orientation="h",
+        legend=dict(x=0, y=1.05),
         # secondary y axis
         # yaxis2=dict(title='Delta', overlaying='y', side='right'),
         # legend orientation
-        # legend_orientation="h",
         )
-    fig.show()
+    fig.write_html("Black_Scholes_Model.html", auto_open=True)
 
 # Parameters
 K = 50       # Strike price
