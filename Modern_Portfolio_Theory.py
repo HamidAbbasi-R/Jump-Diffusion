@@ -1,4 +1,11 @@
 #%%
+"""
+This Python script leverages concepts from Modern Portfolio Theory (MPT) 
+to simulate and visualize portfolio performance, generate the Efficient Frontier,
+and identify the portfolio with the maximum Sharpe Ratio. 
+The code incorporates realistic portfolio characteristics using jump diffusion 
+processes for asset price simulation and covariance matrix computation.
+"""
 import numpy as np
 from Jump_Diffusion import jump_diffusion
 from Jump_Diffusion import plot_jump_diffusion_simulation
@@ -111,6 +118,16 @@ def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100,
     # Generate random portfolios
     results = np.zeros((3, num_portfolios))  # Store return, volatility, Sharpe Ratio
     weights_record = []
+    
+    # find the analytical solution for the portfolio with max Sharpe Ratio [needs more work]
+    # inv_cov_matrix = np.linalg.inv(cov_matrix)
+    # ones = np.ones(num_assets)
+    # A = np.dot(ones, np.dot(inv_cov_matrix, mean_returns))
+    # B = np.dot(mean_returns, np.dot(inv_cov_matrix, mean_returns))
+    # C = np.dot(ones, np.dot(inv_cov_matrix, ones))
+    # D = B * C - A**2
+    # max_sharpe_weights = (1/D) * np.dot(inv_cov_matrix, mean_returns - risk_free_rate * ones)
+    # max_sharpe_weights = max_sharpe_weights / np.sum(max_sharpe_weights)
     
     for i in range(num_portfolios):
         weights = np.random.random(num_assets)

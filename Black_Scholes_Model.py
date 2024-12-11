@@ -1,4 +1,10 @@
-#%%
+#%% 
+"""
+This script implements the Black-Scholes model to calculate the prices of European call and put options, 
+computes the option Greeks (Delta, Gamma, Theta, Vega, and Rho), 
+and visualizes the results using interactive plots.
+"""
+
 import numpy as np
 from scipy.stats import norm
 import plotly.graph_objects as go
