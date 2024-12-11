@@ -22,9 +22,9 @@ This script implements the Black-Scholes model to calculate European option pric
 
 #### Functions
 
-##### `black_scholes_price`
+##### `call_option_price` and `put_option_price`
 
-Calculates the Black-Scholes price for European call and put options.
+Calculates the price of a European call or put option using the Black-Scholes formula.
 
 **Parameters**:
 
@@ -36,8 +36,8 @@ Calculates the Black-Scholes price for European call and put options.
 
 **Returns**:
 
-- `call_price`: Price of the call option.
-- `put_price`: Price of the put option.
+- `C`: Price of the call option.
+- `P`: Price of the put option.
 
 ##### `calculate_greeks`
 
@@ -45,20 +45,19 @@ Computes the Greeks for a given option.
 
 **Parameters**:
 
-- Same as `black_scholes_price`.
+- Same as `call_option_price` and `pull_option_price`.
 
 **Returns**:
 
-- Dictionary containing values for delta, gamma, theta, vega, and rho.
+- `delta`: Sensitivity of the option price to changes in the stock price.
+- `gamma`: Rate of change of delta with respect to the stock price.
+- `theta`: Rate of change of the option price with respect to time.
+- `vega`: Sensitivity of the option price to changes in volatility.
+- `rho`: Sensitivity of the option price to changes in the risk-free rate.
 
-##### `plot_option_metrics`
+##### `plotting`
 
-Plots the option prices or Greeks over a range of stock prices or times.
-
-**Parameters**:
-
-- `plot_type` *(str)*: Either 'price' or 'greeks' to specify the plot type.
-- Other parameters for the option inputs and range settings.
+Plots the option prices and Greeks over a range of stock prices.
 
 ---
 
@@ -66,51 +65,47 @@ Plots the option prices or Greeks over a range of stock prices or times.
 
 #### Overview
 
-This script performs portfolio optimization to maximize returns for a given level of risk or minimize risk for a target return. It also visualizes the efficient frontier, displaying the trade-off between risk and return.
+This script performs portfolio optimization to maximize returns for a given level of risk or minimize risk for a target return. It also visualizes the efficient frontier, displaying the trade-off between risk and return. It uses Monte Carlo simulation to generate random portfolios and identify the optimal portfolios along the efficient frontier.
+
+This script can use random returns and covariance matrices for assets, or calculate the returns and covariance matrices from jump-diffusion simulations with a range of predefined parameters. When using jump-diffusion simulations, MPT uses the historical returns and covariance matrices of the assets (not the *expected* returns and covariance matrices).
+
+Ideally this script should use historical data and should be linked with another framework to make a prediction of future returns and covariance matrices. 
 
 #### Key Features
 
-- **Portfolio Simulation**: Generates random portfolios based on asset weights.
+- **Portfolio Simulation**: Generates random portfolios based on asset weights. The aim is to make a visual representation of the efficient frontier along with all the possible portfolios.
 - **Efficient Frontier**: Identifies optimal portfolios along the frontier.
 - **Visualization**: Plots portfolio compositions and the efficient frontier.
 
 #### Functions
 
-##### `simulate_portfolios`
+##### `simulate_portfolio_performance`
 
 Generates random portfolios and calculates their returns and risks.
 
 **Parameters**:
 
-- `returns` *(array)*: Historical returns of assets.
+- `mean_returns` *(array)*: Historical returns of assets. Could be expected returns.
 - `cov_matrix` *(array)*: Covariance matrix of asset returns.
-- `risk_free_rate` *(float)*: Annualized risk-free rate for Sharpe ratio calculation.
-- `num_portfolios` *(int)*: Number of portfolios to simulate.
+- `num_portfolios` *(int)*: Number of portfolios to simulate. Default is 100.
+- `risk_free_rate` *(float)*: Annualized risk-free rate for Sharpe ratio calculation. Default is 0.02.
 
-**Returns**:
+##### `plot_results`
 
-- Dictionary containing portfolio weights, risks, returns, and Sharpe ratios.
+Plots the simulated portfolios on a scatter plot.
 
-##### `calculate_efficient_frontier`
+**Parameters**:
+- `results`: *(array)*: Portfolio performance metrics. Output of `simulate_portfolio_performance`.
+- `risk_free_rate` *(float)*: Annualized risk-free rate for Sharpe ratio calculation. Default is 0.02.
+- `show_cml` *(bool)*: Whether to show the Capital Market Line. Default is `True`.
 
-Finds the optimal portfolios for a range of target returns.
+##### `find_efficient_frontier`
+
+Finds the optimal portfolios from a set of simulated portfolios.
 
 **Parameters**:
 
-- `returns`, `cov_matrix`, `target_returns`: Inputs for optimization.
-
-**Returns**:
-
-- Arrays of risks and weights for the efficient frontier portfolios.
-
-##### `plot_efficient_frontier`
-
-Visualizes the efficient frontier and simulated portfolios.
-
-**Parameters**:
-
-- Inputs for portfolio simulation and frontier calculation.
-- Plot customizations such as colors and labels.
+- `results` *(array)*: Portfolio performance metrics. Output of `simulate_portfolio_performance`.
 
 ---
 
@@ -208,5 +203,3 @@ plot_jump_diffusion_simulation(simulations, paths, times, N=20)
 ```
 
 ---
-
-This document provides a comprehensive guide to implementing and using three distinct financial modeling tools for analyzing options, portfolios, and asset price dynamics with jumps.
