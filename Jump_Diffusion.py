@@ -68,7 +68,7 @@ def plot_jump_diffusion_simulation(simulations, paths, times=None, N=10):
     
     fig.add_trace(go.Histogram(
         y=paths[:, -1],
-        marker=dict(color='lightgrey'),
+        marker=dict(color='gray'),
         showlegend=False,
         orientation='h',
     ), row=1, col=2)
@@ -78,7 +78,7 @@ def plot_jump_diffusion_simulation(simulations, paths, times=None, N=10):
         xaxis_title='Time',
         yaxis_title='Price',
         xaxis2_title='Count',
-        template='plotly_dark',
+        template='seaborn',
     )
 
     fig.show()
@@ -92,7 +92,7 @@ jump_mean = 0.02   # Average jump size (-2%)
 jump_std = 0.1     # Jump size volatility (10%)
 T = 1              # Time horizon in years
 dt = 1/252         # Daily time steps
-simulations = 100  # Number of simulation paths
+simulations = 10000  # Number of simulation paths
 
 # Run simulation
 times, paths = jump_diffusion(S0, mu, sigma, lambda_, jump_mean, jump_std, T, dt, simulations)
