@@ -10,7 +10,7 @@ import numpy as np
 from Jump_Diffusion import jump_diffusion
 from Jump_Diffusion import plot_jump_diffusion_simulation
 import plotly.graph_objects as go
-def find_pareto_frontier(results):
+def find_efficient_frontier(results):
 
     # Sample data
     x = results[1]   # Volatility
@@ -32,9 +32,10 @@ def find_pareto_frontier(results):
     pareto_frontier = np.array(pareto_frontier)
     return pareto_frontier
 
-def plot_results(results, max_sharpe_idx, risk_free_rate, show_risk_free=True):
+def plot_results(results, risk_free_rate = 0.02, show_cml=True):
     
-    pareto_frontier = find_pareto_frontier(results)
+    max_sharpe_idx = np.argmax(results[2])
+    pareto_frontier = find_efficient_frontier(results)
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -49,7 +50,7 @@ def plot_results(results, max_sharpe_idx, risk_free_rate, show_risk_free=True):
         ),
         showlegend=False,
     ))
-    if show_risk_free:
+    if show_cml:
         fig.add_trace(go.Scatter(
             x=[0], 
             y=[risk_free_rate], 
@@ -149,7 +150,7 @@ def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100,
     
     
     # Plot results
-    plot_results(results, max_sharpe_idx, risk_free_rate, show_risk_free=False)
+    plot_results(results, risk_free_rate, show_cml=False)
     
     # print("Max Sharpe Ratio Portfolio Weights:")
     # for i, weight in enumerate(max_sharpe_weights):
