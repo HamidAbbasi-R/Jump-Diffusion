@@ -98,7 +98,7 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
         ))
     
     fig.update_layout(
-        # title='Efficient Frontier', 
+        title='Portfolio Optimization', 
         xaxis_title='Volatility', 
         yaxis_title='Return', 
         # legend=dict(
@@ -109,8 +109,9 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
         #     orientation='v'),
         coloraxis_showscale=False,
         )
-    # hide the colorbar
-    # fig.update_layout(coloraxis_showscale=False)
+    # show the axis zero lines
+    fig.update_xaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
+    fig.update_yaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
     fig.show()
 
 def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100, risk_free_rate=0.02):
@@ -150,7 +151,7 @@ def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100,
     
     
     # Plot results
-    plot_results(results, risk_free_rate, show_cml=False)
+    plot_results(results, risk_free_rate, show_cml=True)
     
     # print("Max Sharpe Ratio Portfolio Weights:")
     # for i, weight in enumerate(max_sharpe_weights):
@@ -161,11 +162,11 @@ def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100,
 
 # Call the function
 num_assets = 10
-num_portfolios = 10000
+num_portfolios = 5000
 risk_free_rate = 0.02
 
 random_returns = False
-seed = 21
+seed = None
 
 np.random.seed(seed) if seed else None
 
@@ -188,7 +189,7 @@ if random_returns:
 else:
     prices = [jump_diffusion(S0[i], mu[i], sigma[i], lambda_[i], jump_mean[i], jump_std[i], T, dt, 1)[1] for i in range(num_assets)]
     prices = np.array(prices).reshape(num_assets, -1)
-    plot_jump_diffusion_simulation(num_assets, prices)
+    # plot_jump_diffusion_simulation(num_assets, prices)
 
     # annual returns
     mean_returns = (prices[:, -1] - S0) / S0
