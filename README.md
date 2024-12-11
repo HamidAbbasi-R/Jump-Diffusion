@@ -1,4 +1,4 @@
-### Comprehensive Documentation for Financial Modeling Scripts
+# Documentation for Financial Modeling Scripts
 
 This document combines the documentation for three key financial modeling scripts:
 
@@ -8,21 +8,21 @@ This document combines the documentation for three key financial modeling script
 
 ---
 
-### 1. Black-Scholes Option Pricing and Greeks Analysis
+# 1. Black-Scholes Option Pricing and Greeks Analysis
 
-#### Overview
+## Overview
 
 This script implements the Black-Scholes model to calculate European option prices and key sensitivities (Greeks) such as delta, gamma, theta, vega, and rho. The model assumes a log-normal distribution of stock prices and constant volatility, making it ideal for pricing options under simplified market conditions.
 
-#### Key Features
+## Key Features
 
 - **Option Pricing**: Computes call and put prices for European options.
 - **Greeks Calculation**: Evaluates the sensitivities of the option price to various parameters.
 - **Visualization**: Plots option price and Greek values for a range of stock prices or times.
 
-#### Functions
+## Functions
 
-##### `call_option_price` and `put_option_price`
+### `call_option_price` and `put_option_price`
 
 Calculates the price of a European call or put option using the Black-Scholes formula.
 
@@ -39,7 +39,7 @@ Calculates the price of a European call or put option using the Black-Scholes fo
 - `C`: Price of the call option.
 - `P`: Price of the put option.
 
-##### `calculate_greeks`
+### `calculate_greeks`
 
 Computes the Greeks for a given option.
 
@@ -55,15 +55,15 @@ Computes the Greeks for a given option.
 - `vega`: Sensitivity of the option price to changes in volatility.
 - `rho`: Sensitivity of the option price to changes in the risk-free rate.
 
-##### `plotting`
+### `plotting`
 
 Plots the option prices and Greeks over a range of stock prices.
 
 ---
 
-### 2. Portfolio Simulation and Visualization with Efficient Frontier
+# 2. Portfolio Simulation and Visualization with Efficient Frontier
 
-#### Overview
+## Overview
 
 This script performs portfolio optimization to maximize returns for a given level of risk or minimize risk for a target return. It also visualizes the efficient frontier, displaying the trade-off between risk and return. It uses Monte Carlo simulation to generate random portfolios and identify the optimal portfolios along the efficient frontier.
 
@@ -71,15 +71,15 @@ This script can use random returns and covariance matrices for assets, or calcul
 
 Ideally this script should use historical data and should be linked with another framework to make a prediction of future returns and covariance matrices. 
 
-#### Key Features
+## Key Features
 
 - **Portfolio Simulation**: Generates random portfolios based on asset weights. The aim is to make a visual representation of the efficient frontier along with all the possible portfolios.
 - **Efficient Frontier**: Identifies optimal portfolios along the frontier.
 - **Visualization**: Plots portfolio compositions and the efficient frontier.
 
-#### Functions
+## Functions
 
-##### `simulate_portfolio_performance`
+### `simulate_portfolio_performance`
 
 Generates random portfolios and calculates their returns and risks.
 
@@ -90,7 +90,7 @@ Generates random portfolios and calculates their returns and risks.
 - `num_portfolios` *(int)*: Number of portfolios to simulate. Default is 100.
 - `risk_free_rate` *(float)*: Annualized risk-free rate for Sharpe ratio calculation. Default is 0.02.
 
-##### `plot_results`
+### `plot_results`
 
 Plots the simulated portfolios on a scatter plot.
 
@@ -99,7 +99,7 @@ Plots the simulated portfolios on a scatter plot.
 - `risk_free_rate` *(float)*: Annualized risk-free rate for Sharpe ratio calculation. Default is 0.02.
 - `show_cml` *(bool)*: Whether to show the Capital Market Line. Default is `True`.
 
-##### `find_efficient_frontier`
+### `find_efficient_frontier`
 
 Finds the optimal portfolios from a set of simulated portfolios.
 
@@ -109,21 +109,21 @@ Finds the optimal portfolios from a set of simulated portfolios.
 
 ---
 
-### 3. Jump-Diffusion Model Simulation Script
+# 3. Jump-Diffusion Model Simulation Script
 
-#### Overview
+## Overview
 
 This script simulates asset price movements using the **Jump-Diffusion Model** (also known as the Merton model). The model combines the features of Geometric Brownian Motion (GBM) with jumps, capturing both continuous price changes and sudden, discrete price movements due to external shocks.
 
-#### Key Features
+## Key Features
 
 - **Jump-Diffusion Model**: Combines Geometric Brownian Motion with a Poisson-driven jump component.
 - **Simulation**: Customizable parameters for drift, volatility, jump intensity, jump size, and number of simulation paths.
 - **Visualization**: Simulates multiple asset price paths and displays a histogram of terminal prices.
 
-#### Functions
+## Functions
 
-##### `jump_diffusion`
+### `jump_diffusion`
 
 Simulates asset prices using the Jump-Diffusion model.
 
@@ -144,7 +144,7 @@ Simulates asset prices using the Jump-Diffusion model.
 - `times`: A NumPy array of time points.
 - `paths`: A NumPy array of simulated paths with shape `(simulations, time_steps)`.
 
-##### `plot_jump_diffusion_simulation`
+### `plot_jump_diffusion_simulation`
 
 Plots the simulated paths and a histogram of the final asset prices.
 
@@ -157,9 +157,9 @@ Plots the simulated paths and a histogram of the final asset prices.
 
 ---
 
-### Usage Example
+# Usage Example
 
-#### Black-Scholes Option Pricing
+## Black-Scholes Option Pricing
 
 ```python
 S = 100
@@ -173,7 +173,7 @@ greeks = calculate_greeks(S, K, T, r, sigma)
 plot_option_metrics('price', S, K, T, r, sigma, S_range=(50, 150))
 ```
 
-#### Portfolio Simulation and Visualization
+## Portfolio Simulation and Visualization
 
 ```python
 returns = np.random.randn(100, 5)  # Simulated returns for 5 assets
@@ -185,7 +185,7 @@ efficient_frontier = calculate_efficient_frontier(returns, cov_matrix, np.linspa
 plot_efficient_frontier(simulated_data, efficient_frontier)
 ```
 
-#### Jump-Diffusion Model Simulation
+## Jump-Diffusion Model Simulation
 
 ```python
 S0 = 100
