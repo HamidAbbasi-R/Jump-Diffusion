@@ -1,5 +1,6 @@
-# Documentation for Financial Modeling Scripts
+# Price Simulation (Jump-Diffusion Model, Black-Scholes, Portfolio Optimization)
 
+![a](docs/MPT-VaR.png)
 This document combines the documentation for three key financial modeling scripts:
 <!-- create links to different section -->
 
@@ -73,10 +74,13 @@ This script can use random returns and covariance matrices for assets, or calcul
 
 Ideally this script should use historical data and should be linked with another framework to make a prediction of future returns and covariance matrices. 
 
+This script also calculates VaR (Value at Risk) for a given confidence level, which is a measure of the potential loss in value of a risky asset or portfolio over a defined period for a given confidence interval. VaR is used as one of the metrics to select the optimal portfolio. Check the top figure of this documentation.
+
 ## Key Features
 
 - **Portfolio Simulation**: Generates random portfolios based on asset weights. The aim is to make a visual representation of the efficient frontier along with all the possible portfolios.
 - **Efficient Frontier**: Identifies optimal portfolios along the frontier.
+- **Risk and Return Metrics**: Calculates portfolio returns, risks (VaR), and Sharpe ratios.
 - **Visualization**: Plots portfolio compositions and the efficient frontier.
 
 ## Functions
