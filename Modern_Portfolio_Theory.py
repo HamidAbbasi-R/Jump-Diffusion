@@ -7,37 +7,49 @@ The code incorporates realistic portfolio characteristics using jump diffusion
 processes for asset price simulation and covariance matrix computation.
 """
 import numpy as np
+from plotly.subplots import make_subplots
 from Jump_Diffusion import jump_diffusion
 from Jump_Diffusion import plot_jump_diffusion_simulation
 import plotly.graph_objects as go
-def find_efficient_frontier(results):
+def find_efficient_frontier(x, y, maximize_x=True, maximize_y=True):
+    """
+    Calculate the Pareto frontier for two objectives.
 
-    # Sample data
-    x = results[1]   # Volatility
-    y = results[0]   # Return
+    Args:
+        x (array-like): Values for the x-axis objective.
+        y (array-like): Values for the y-axis objective.
+        maximize_x (bool): Whether to maximize the x-axis objective.
+        maximize_y (bool): Whether to maximize the y-axis objective.
 
-    # Combine and sort data by x (ascending)
+    Returns:
+        pareto_frontier (ndarray): Array of Pareto-optimal points.
+    """
+    # Combine and sort data based on x-axis direction
     data = np.array(list(zip(x, y)))
-    data = data[np.argsort(data[:, 0])]  # Sort by x ascending
+    sort_order = -1 if maximize_x else 1
+    data = data[np.argsort(sort_order * data[:, 0])]  # Sort based on x-axis objective
 
     # Find Pareto frontier
     pareto_frontier = []
-    max_y = -np.inf  # Initialize to a very small value
+    extreme_y = -np.inf if maximize_y else np.inf  # Initialize based on y-axis direction
 
     for point in data:
-        if point[1] > max_y:  # Check if current point is Pareto-optimal
+        if (maximize_y and point[1] > extreme_y) or (not maximize_y and point[1] < extreme_y):
             pareto_frontier.append(point)
-            max_y = point[1]
+            extreme_y = point[1]
 
-    pareto_frontier = np.array(pareto_frontier)
-    return pareto_frontier
+    return np.array(pareto_frontier)
 
 def plot_results(results, risk_free_rate = 0.02, show_cml=True):
     
     max_sharpe_idx = np.argmax(results[2])
-    pareto_frontier = find_efficient_frontier(results)
+    pareto_frontier = find_efficient_frontier(results[1], results[0], maximize_x=False, maximize_y=True)
 
-    fig = go.Figure()
+    fig = make_subplots(
+        rows=1, cols=2, 
+        # subplot_titles=('Return vs Volatility', 'Sharpe Ratio vs VaR'),
+        )
+    
     fig.add_trace(go.Scatter(
         x=results[1],   # Volatility
         y=results[0],   # Return
@@ -46,10 +58,20 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
             size=5, 
             color=results[2], 
             colorscale='Viridis', 
-            # colorbar=dict(title='Sharpe Ratio'),
+            colorbar=dict(
+                title='Sharpe Ratio',
+                # position is set to be at the bottom of the plot
+                xanchor='left',
+                x=0.05,
+                yanchor='bottom',
+                y = 0.98,
+                len=0.3,
+                orientation='h',
+                thickness=15,
+                ),
         ),
         showlegend=False,
-    ))
+    ), row=1, col=1)
     if show_cml:
         fig.add_trace(go.Scatter(
             x=[0], 
@@ -62,7 +84,7 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
                 line=dict(width=2)
                 ),
             name='Risk-Free Rate',
-            ))
+            ), row=1, col=1)
         # connect risk-free rate to the point of max Sharpe Ratio
         fig.add_trace(go.Scatter(
             x=[0, results[1, max_sharpe_idx]], 
@@ -71,7 +93,7 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
             line=dict(color='blue', width=1, dash='dash'),
             name='Capital Market Line',
             # showlegend=,
-            ))
+            ), row=1, col=1)
     
     # Efficient Frontier
     fig.add_trace(go.Scatter(
@@ -79,9 +101,9 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
         y=pareto_frontier[:, 1], 
         mode='lines+markers', 
         line=dict(color='red', width=2),
-        marker=dict(size=7, color='red'),
+        marker=dict(size=7, color='red', opacity=0.5),
         name='Efficient Frontier',
-        ))
+        ), row=1, col=1)
     
     # Max Sharpe Ratio Portfolio
     fig.add_trace(go.Scatter(
@@ -95,30 +117,87 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
             line=dict(width=2)
             ),
         name='Max Sharpe Ratio',
-        ))
+        ), row=1, col=1)
+    
+    # Plot Sharpe Ratio vs VaR
+    pareto_frontier = find_efficient_frontier(results[2], results[3], maximize_x=True, maximize_y=True)
+
+    fig.add_trace(go.Scatter(
+        x=results[2],   # Sharpe Ratio
+        y=results[3],   # VaR
+        mode='markers',
+        marker=dict(
+            size=5,
+            color=results[0],
+            colorscale='Viridis',
+            colorbar=dict(
+                title='Return',
+                # position is set to be at the bottom of the plot
+                xanchor='left',
+                x=0.6,
+                yanchor='bottom',
+                y = 0.98,
+                len=0.3,
+                orientation='h',
+                thickness=15,
+                ),
+        ),
+        showlegend=False,
+    ), row=1, col=2)
+
+    fig.add_trace(go.Scatter(
+        x=pareto_frontier[:, 0], 
+        y=pareto_frontier[:, 1], 
+        mode='lines+markers', 
+        line=dict(color='red', width=2),
+        marker=dict(size=7, color='red', opacity=0.5),
+        name='Efficient Frontier',
+        showlegend=False,
+        ), row=1, col=2)
+    
+    fig.add_trace(go.Scatter(
+        x=[results[2, max_sharpe_idx]], 
+        y=[results[3, max_sharpe_idx]], 
+        mode='markers', 
+        marker=dict(
+            size=10, 
+            color='blue', 
+            symbol='x', 
+            line=dict(width=2)
+            ),
+        showlegend=False,
+        name='Max Sharpe Ratio',
+        ), row=1, col=2)
     
     fig.update_layout(
-        title='Portfolio Optimization', 
+        # title='Portfolio Optimization', 
         xaxis_title='Volatility', 
         yaxis_title='Return', 
-        # legend=dict(
-        #     yanchor="top", 
-        #     y=1.15, 
-        #     xanchor="left", 
-        #     x=1,
-        #     orientation='v'),
-        coloraxis_showscale=False,
+        xaxis2_title='Sharpe Ratio',
+        yaxis2_title=f'VaR (%) at {100-VaR_percentile}% confidence level',
+        legend=dict(
+            yanchor="top", 
+            y=1.15, 
+            xanchor="left", 
+            x=0.4,
+            orientation='h'),
+        
         )
-    # show the axis zero lines
     fig.update_xaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
     fig.update_yaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
-    fig.show()
+    # save html file
+    fig.write_html('portfolio_optimization.html', auto_open=True)
 
-def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100, risk_free_rate=0.02):
+def simulate_portfolio_performance(
+        mean_returns, 
+        cov_matrix,
+        var, 
+        num_portfolios=100, 
+        risk_free_rate=0.02):
     
     num_assets = len(mean_returns)
     # Generate random portfolios
-    results = np.zeros((3, num_portfolios))  # Store return, volatility, Sharpe Ratio
+    results = np.zeros((4, num_portfolios))  # Store return, volatility, Sharpe Ratio
     weights_record = []
     
     # find the analytical solution for the portfolio with max Sharpe Ratio [needs more work]
@@ -136,6 +215,10 @@ def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100,
         weights /= np.sum(weights)  # Normalize to 1
         weights_record.append(weights)
         
+        # calculate value at risk
+        VaR = np.dot(weights, var)     # in percentage
+        
+        
         # Calculate portfolio return and risk
         portfolio_return = np.dot(weights, mean_returns)
         portfolio_volatility = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
@@ -144,29 +227,19 @@ def simulate_portfolio_performance(mean_returns, cov_matrix, num_portfolios=100,
         results[0, i] = portfolio_return
         results[1, i] = portfolio_volatility
         results[2, i] = sharpe_ratio
-    
-    # Locate portfolio with max Sharpe Ratio
-    max_sharpe_idx = np.argmax(results[2])
-    max_sharpe_weights = weights_record[max_sharpe_idx]
-    
+        results[3, i] = VaR    
     
     # Plot results
-    plot_results(results, risk_free_rate, show_cml=True)
-    
-    # print("Max Sharpe Ratio Portfolio Weights:")
-    # for i, weight in enumerate(max_sharpe_weights):
-    #     print(f"Asset {i + 1}: {weight:.2%}")
-    # print(f"Expected Return: {results[0, max_sharpe_idx]:.2%}")
-    # print(f"Volatility: {results[1, max_sharpe_idx]:.2%}")
-    # print(f"Sharpe Ratio: {results[2, max_sharpe_idx]:.2f}")
+    plot_results(results, risk_free_rate, show_cml=False)
+
 
 # Call the function
-num_assets = 10
+num_assets = 5
 num_portfolios = 5000
 risk_free_rate = 0.02
 
 random_returns = False
-seed = None
+seed = 2
 
 np.random.seed(seed) if seed else None
 
@@ -176,9 +249,9 @@ sigma = np.random.uniform(0.1, 0.3, num_assets)         # Annual volatility (10%
 lambda_ = np.random.uniform(0.5, 1, num_assets)         # Jump frequency (10%-50%)
 jump_mean = np.random.uniform(-0.1, 0.1, num_assets)    # Jump size mean (-10%-10%)
 jump_std = np.random.uniform(0.1, 0.2, num_assets)      # Jump size std (10%-30%)
-T = 1              # Time horizon in years
+T = 5              # Time horizon in years
 dt = 1/252         # Daily time steps
-
+VaR_percentile = 1 # Value at Risk percentile 5% or 1%
 
 
 # Simulated returns and covariance for demonstration
@@ -189,6 +262,8 @@ if random_returns:
 else:
     prices = [jump_diffusion(S0[i], mu[i], sigma[i], lambda_[i], jump_mean[i], jump_std[i], T, dt, 1)[1] for i in range(num_assets)]
     prices = np.array(prices).reshape(num_assets, -1)
+    returns = (prices[:, 1:] - prices[:, :-1]) / prices[:, :-1] * 100
+    # log_returns = np.log(prices[:, 1:] / prices[:, :-1])
     # plot_jump_diffusion_simulation(num_assets, prices)
 
     # annual returns
@@ -196,9 +271,13 @@ else:
     # covariance matrix
     cov_matrix = np.cov(mean_returns)
 
+    var = np.percentile(returns, VaR_percentile, axis=1)
+
+
 simulate_portfolio_performance(
     mean_returns,
     cov_matrix,
-    num_portfolios, 
+    var,
+    num_portfolios,
     risk_free_rate,
     )
