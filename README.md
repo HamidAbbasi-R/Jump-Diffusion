@@ -82,6 +82,9 @@ This script also calculates VaR (Value at Risk) for a given confidence level, wh
 - **Efficient Frontier**: Identifies optimal portfolios along the frontier.
 - **Risk and Return Metrics**: Calculates portfolio returns, risks (VaR), and Sharpe ratios.
 - **Visualization**: Plots portfolio compositions and the efficient frontier.
+- **Bayesian Performance**: Calculates the Bayesian performance of the portfolio showing the uncertainty of the metrics.
+
+![a](docs/Bayesian%20performance.png)
 
 ## Functions
 
