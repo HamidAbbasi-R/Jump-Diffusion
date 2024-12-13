@@ -188,6 +188,46 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
     # save html file
     fig.write_html('portfolio_optimization.html', auto_open=True)
 
+    # histograms
+    fig_hist = make_subplots(
+        rows=2, cols=2,)
+    hist_data = [
+        (results[0], 'Return', 'blue', (1,1)),
+        (results[1], 'Volatility', 'red', (1,2)),
+        (results[2], 'Sharpe Ratio', 'green', (2,1)),
+        (results[3], 'VaR', 'orange', (2,2)),
+    ]
+
+    for _, (data, name, color, pos) in enumerate(hist_data):
+        fig_hist.add_trace(go.Histogram(
+            x=data,
+            name=name,
+            # marker_color=color,
+        ), row=pos[0], col=pos[1])
+        fig_hist.add_vline(
+            x=np.mean(data), 
+            line_width=2, 
+            line_dash="dash", 
+            line_color='black',
+            annotation_text=f'Mean: {np.mean(data):.2f}',
+            annotation_position="top right", 
+            row=pos[0], col=pos[1])
+    fig_hist.update_layout(
+        title='Portfolio Optimization Histograms',
+        showlegend=False,
+        xaxis_title='Return',
+        yaxis_title='Frequency',
+        xaxis2_title='Volatility',
+        yaxis2_title='Frequency',
+        xaxis3_title='Sharpe Ratio',
+        yaxis3_title='Frequency',
+        xaxis4_title='VaR',
+        yaxis4_title='Frequency',
+        )
+    fig_hist.update_xaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
+    fig_hist.update_yaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
+    fig_hist.write_html('portfolio_optimization_histograms.html', auto_open=True)
+
 def simulate_portfolio_performance(
         mean_returns, 
         cov_matrix,
