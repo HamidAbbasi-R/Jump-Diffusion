@@ -8,8 +8,8 @@ processes for asset price simulation and covariance matrix computation.
 """
 import numpy as np
 from plotly.subplots import make_subplots
-from Jump_Diffusion import jump_diffusion
-from Jump_Diffusion import plot_jump_diffusion_simulation
+from Stochastic_Processes import StochasticProcesses 
+# from Stochastic_Processes import plot_paths
 import plotly.graph_objects as go
 def find_efficient_frontier(x, y, maximize_x=True, maximize_y=True):
     """
@@ -300,7 +300,8 @@ if random_returns:
     cov_matrix = np.random.uniform(0.01, 0.05, (num_assets, num_assets))
     cov_matrix = (cov_matrix + cov_matrix.T) / 2  # Symmetric covariance matrix
 else:
-    prices = [jump_diffusion(S0[i], mu[i], sigma[i], lambda_[i], jump_mean[i], jump_std[i], T, dt, 1)[1] for i in range(num_assets)]
+    sp = StochasticProcesses()
+    prices = [sp.jump_diffusion(S0[i], mu[i], sigma[i], lambda_[i], jump_mean[i], jump_std[i], T, dt, 1)[1] for i in range(num_assets)]
     prices = np.array(prices).reshape(num_assets, -1)
     returns = (prices[:, 1:] - prices[:, :-1]) / prices[:, :-1] * 100
     # log_returns = np.log(prices[:, 1:] / prices[:, :-1])
