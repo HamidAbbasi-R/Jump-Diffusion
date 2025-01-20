@@ -1,4 +1,6 @@
 # Stochastic Processes, Portfolio Optimization, and Option Pricing
+Try this app for yourself [here](https://stochastic-processes-zkpe7c5gqvuup3mbfmurlt.streamlit.app/).
+
 
 ![a](docs/MPT-VaR.png)
 This document combines the documentation for three key financial modeling scripts:
