@@ -6,6 +6,7 @@ and identify the portfolio with the maximum Sharpe Ratio.
 The code incorporates realistic portfolio characteristics using jump diffusion 
 processes for asset price simulation and covariance matrix computation.
 """
+import streamlit as st
 import numpy as np
 from plotly.subplots import make_subplots
 from Stochastic_Processes import StochasticProcesses 
@@ -186,7 +187,7 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
     fig.update_xaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
     fig.update_yaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
     # save html file
-    fig.write_html('portfolio_optimization.html', auto_open=True)
+    # fig.write_html('portfolio_optimization.html', auto_open=True)
 
     # histograms
     fig_hist = make_subplots(
@@ -226,7 +227,9 @@ def plot_results(results, risk_free_rate = 0.02, show_cml=True):
         )
     fig_hist.update_xaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
     fig_hist.update_yaxes(zeroline=True, zerolinewidth=1, zerolinecolor='black')
-    fig_hist.write_html('portfolio_optimization_histograms.html', auto_open=True)
+    # fig_hist.write_html('portfolio_optimization_histograms.html', auto_open=True)
+
+    return fig, fig_hist
 
 def simulate_portfolio_performance(
         mean_returns, 
@@ -270,28 +273,51 @@ def simulate_portfolio_performance(
         results[3, i] = VaR    
     
     # Plot results
-    plot_results(results, risk_free_rate, show_cml=False)
+    fig, fig_hist = plot_results(results, risk_free_rate, show_cml=False)
+    return fig, fig_hist
 
 
 # Call the function
-num_assets = 5
-num_portfolios = 5000
-risk_free_rate = 0.02
+# np.random.seed(seed) if seed else None
+with st.sidebar:
+    st.title('Portfolio Optimization')
+    st.write('This app simulates portfolio performance, generates the Efficient Frontier, and identifies the portfolio with the maximum Sharpe Ratio.')
+    num_assets = st.slider('Number of Assets', min_value=2, max_value=100, value=5, step=1)
+    num_portfolios = st.slider('Number of Portfolios', min_value=100, max_value=10000, value=1000, step=100)
+    risk_free_rate = st.slider('Risk-Free Rate (%)', min_value=0.0, max_value=.1, value=0.02, step=0.01)
+    risk_free_rate = 0.02
 
-random_returns = False
-seed = 2
+    random_returns = st.checkbox('Use Random Returns', value=False)
+    seed = st.slider('Random Seed', min_value=0, max_value=1000, value=0, step=1)
 
-np.random.seed(seed) if seed else None
 
-S0 = np.random.uniform(100, 200, num_assets)            # Initial price
-mu = np.random.uniform(0.05, 0.2, num_assets)           # Annual drift (5%-20%)
-sigma = np.random.uniform(0.1, 0.3, num_assets)         # Annual volatility (10%-30%)
-lambda_ = np.random.uniform(0.5, 1, num_assets)         # Jump frequency (10%-50%)
-jump_mean = np.random.uniform(-0.1, 0.1, num_assets)    # Jump size mean (-10%-10%)
-jump_std = np.random.uniform(0.1, 0.2, num_assets)      # Jump size std (10%-30%)
-T = 5              # Time horizon in years
-dt = 1/252         # Daily time steps
-VaR_percentile = 1 # Value at Risk percentile 5% or 1%
+    S0_low = st.slider('Initial Price Lower Bound', min_value=50, max_value=100, value=100, step=1)
+    S0_high = st.slider('Initial Price Higher Bound', min_value=100, max_value=200, value=200, step=1)
+    S0 = np.random.uniform(S0_low, S0_high, num_assets)            # Initial price
+    
+    mu_low = st.slider('Annual Drift Lower Bound (%)', min_value=5, max_value=20, value=5, step=1)
+    mu_high = st.slider('Annual Drift Higher Bound (%)', min_value=20, max_value=50, value=20, step=1)
+    mu = np.random.uniform(mu_low/100, mu_high/100, num_assets)           # Annual drift (5%-20%)
+    
+    sigma_low = st.slider('Annual Volatility Lower Bound (%)', min_value=10, max_value=30, value=10, step=1)
+    sigma_high = st.slider('Annual Volatility Higher Bound (%)', min_value=30, max_value=50, value=30, step=1)
+    sigma = np.random.uniform(sigma_low/100, sigma_high/100, num_assets)         # Annual volatility (10%-30%)
+    
+    lambda_low = st.slider('Jump Frequency Lower Bound (%)', min_value=5, max_value=50, value=5, step=1)
+    lambda_high = st.slider('Jump Frequency Higher Bound (%)', min_value=50, max_value=100, value=50, step=1)
+    lambda_ = np.random.uniform(lambda_low/100, lambda_high/100, num_assets)         # Jump frequency (10%-50%)
+    
+    jump_mean_low = st.slider('Jump Size Mean Lower Bound (%)', min_value=-10, max_value=0, value=-10, step=1)
+    jump_mean_high = st.slider('Jump Size Mean Higher Bound (%)', min_value=0, max_value=10, value=0, step=1)
+    jump_mean = np.random.uniform(jump_mean_low/100, jump_mean_high/100, num_assets)    # Jump size mean (-10%-10%)
+    
+    jump_std_low = st.slider('Jump Size Standard Deviation Lower Bound (%)', min_value=0, max_value=10, value=10, step=1)
+    jump_std_high = st.slider('Jump Size Standard Deviation Higher Bound (%)', min_value=10, max_value=30, value=30, step=1)
+    jump_std = np.random.uniform(jump_std_low/100, jump_std_high/100, num_assets)      # Jump size std (10%-30%)
+
+    T = st.slider('Time horizon in years', min_value=1, max_value=5, value=2, step=1)              # Time horizon in years
+    VaR_percentile = st.slider('VaR Percentile (%)', min_value=1, max_value=10, value=5, step=1)  # VaR percentile
+    dt = 1/252         # Daily time steps
 
 
 # Simulated returns and covariance for demonstration
@@ -315,10 +341,15 @@ else:
     var = np.percentile(returns, VaR_percentile, axis=1)
 
 
-simulate_portfolio_performance(
+fig, fig_hist = simulate_portfolio_performance(
     mean_returns,
     cov_matrix,
     var,
     num_portfolios,
     risk_free_rate,
     )
+
+st.title('Portfolio Optimization')
+st.plotly_chart(fig)
+st.title('Histograms')
+st.plotly_chart(fig_hist)

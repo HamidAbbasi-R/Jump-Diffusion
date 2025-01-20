@@ -180,7 +180,7 @@ def plot_paths(paths, times=None, N_show=10):
     ), row=1, col=2)
 
     fig.update_layout(
-        title='Jump-Diffusion Model Simulation',
+        title=f'N = {simulations} paths',
         xaxis_title='Time',
         yaxis_title='Price',
         xaxis2_title='Count',
@@ -189,20 +189,26 @@ def plot_paths(paths, times=None, N_show=10):
 
     fig.show()
 
-# Parameters
-S0 = 100           # Initial price
-mu = 0.05          # Annual drift (5%)
-mu_OU = 100        # Mean return for OU process
-sigma = 0.2        # Annual volatility (20%)
-lambda_ = 5        # One jump per year on average
-theta = 0.1       # Mean reversion speed
-jump_mean = 0.05   # Average jump size (-2%)
-jump_std = 0.1     # Jump size volatility (10%)
-T = 1              # Time horizon in years
-dt = 1/252         # Daily time steps
-simulations = 10000  # Number of simulation paths (run in parallel)
+# Parameters for testing
+# S0 = 100           # Initial price
+# mu = 0.05          # Annual drift (5%)
+# mu_OU = 100        # Mean return for OU process
+# sigma = 0.2        # Annual volatility (20%)
+# lambda_ = 2        # One jump per year on average
+# theta = 0.1       # Mean reversion speed
+# jump_mean = 0.05   # Average jump size (-2%)
+# jump_std = 0.1     # Jump size volatility (10%)
+# T = 1              # Time horizon in years
+# dt = 1/252         # Daily time steps
+# simulations = 10000  # Number of simulation paths (run in parallel)
 
-sp = StochasticProcesses()
-times, paths = sp.ornstein_uhlenbeck(S0, mu_OU, sigma, theta, T, dt, simulations)
+# sp = StochasticProcesses()
+# times_bm, paths_bm = sp.brownian_motion(S0, mu, sigma, T, dt, simulations)
+# times_gbm, paths_gbm = sp.geometric_brownian_motion(S0, mu, sigma, T, dt, simulations)
+# times_jd, paths_jd = sp.jump_diffusion(S0, mu, sigma, lambda_, jump_mean, jump_std, T, dt, simulations)
+# times_ou, paths_ou = sp.ornstein_uhlenbeck(S0, mu_OU, sigma, theta, T, dt, simulations)
+# times_cir, paths_cir = sp.cox_ingersoll_ross(S0, mu, sigma, theta, T, dt, simulations)
 
-plot_paths(paths, times, N_show=100)
+# plot_paths(paths_bm, times_bm, N_show=100)
+# plot_paths(paths_gbm, times_gbm, N_show=100)
+# plot_paths(paths_jd, times_jd, N_show=100)
