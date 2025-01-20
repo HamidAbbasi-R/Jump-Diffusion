@@ -276,6 +276,46 @@ def simulate_portfolio_performance(
     fig, fig_hist = plot_results(results, risk_free_rate, show_cml=False)
     return fig, fig_hist
 
+def plot_paths(paths, times=None, N_show=10):
+    if times is None:
+        times = np.arange(paths.shape[1])
+    
+    simulations = paths.shape[0]
+    if N_show > simulations:
+        N_show = simulations
+
+    fig = make_subplots(
+    rows=1, cols=2, 
+    shared_yaxes=True, 
+    horizontal_spacing=0.02,
+    column_widths=[0.8, 0.2]
+    )
+    for i in range(min(simulations, N_show)):  # Plot only the first 10 paths for clarity
+        fig.add_trace(go.Scatter(
+        x=times, 
+        y=paths[i], 
+        mode='lines', 
+        name=f"Path {i+1}",
+        line=dict(width=0.7),
+        showlegend=False,
+        ), row=1, col=1)
+    
+    fig.add_trace(go.Histogram(
+        y=paths[:, -1],
+        marker=dict(color='gray'),
+        showlegend=False,
+        orientation='h',
+    ), row=1, col=2)
+
+    fig.update_layout(
+        title=f'N = {simulations} paths',
+        xaxis_title='Time',
+        yaxis_title='Price',
+        xaxis2_title='Count',
+        template='seaborn',
+    )
+
+    return fig
 
 # Call the function
 # np.random.seed(seed) if seed else None
@@ -317,7 +357,10 @@ with st.sidebar:
 
     T = st.slider('Time horizon in years', min_value=1, max_value=5, value=2, step=1)              # Time horizon in years
     VaR_percentile = st.slider('VaR Percentile (%)', min_value=1, max_value=10, value=5, step=1)  # VaR percentile
-    dt = 1/252         # Daily time steps
+
+    n_paths = st.slider('Number of Price Paths to Show', min_value=10, max_value=1000, value=100, step=10)
+
+dt = 1/252         # Daily time steps
 
 
 # Simulated returns and covariance for demonstration
@@ -329,6 +372,7 @@ else:
     sp = StochasticProcesses()
     prices = [sp.jump_diffusion(S0[i], mu[i], sigma[i], lambda_[i], jump_mean[i], jump_std[i], T, dt, 1)[1] for i in range(num_assets)]
     prices = np.array(prices).reshape(num_assets, -1)
+    fig_paths = plot_paths(prices, N_show=n_paths)
     returns = (prices[:, 1:] - prices[:, :-1]) / prices[:, :-1] * 100
     # log_returns = np.log(prices[:, 1:] / prices[:, :-1])
     # plot_jump_diffusion_simulation(num_assets, prices)
@@ -339,6 +383,7 @@ else:
     cov_matrix = np.cov(mean_returns)
 
     var = np.percentile(returns, VaR_percentile, axis=1)
+
 
 
 fig, fig_hist = simulate_portfolio_performance(
@@ -353,3 +398,5 @@ st.title('Portfolio Optimization')
 st.plotly_chart(fig)
 st.title('Histograms')
 st.plotly_chart(fig_hist)
+st.title('Price Paths')
+st.plotly_chart(fig_paths)
